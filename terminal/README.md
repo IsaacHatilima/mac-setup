@@ -16,6 +16,8 @@ The installer creates `~/Developer` in the current user's home folder and instal
 
 When setup finishes, open iTerm and choose **Profiles → MacSetup Bordeaux**. Type `desk` for the shortcut guide. Open a new tab to load new settings; existing tabs can run `source ~/.zshrc`.
 
+All three MacSetup profiles hide `user@hostname` in normal local sessions and show it over SSH or when running as root, regardless of an existing Powerlevel10k configuration.
+
 If iTerm is closed during installation, setup makes Bordeaux the default. If iTerm is already running, it leaves its default alone to avoid its live settings overwriting the change. To set the default automatically, quit iTerm and rerun setup from Apple Terminal, or select **Settings → Profiles → MacSetup Bordeaux → Other Actions → Set as Default**. Custom iTerm preference-folder setups require selecting the default in Settings.
 
 ```sh

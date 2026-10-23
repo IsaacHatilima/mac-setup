@@ -18,6 +18,10 @@ fi
 # Keep Powerlevel10k's asynchronous Git engine; give the prompt a quieter layout.
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs newline prompt_char)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(context status command_execution_time background_jobs virtualenv node_version php_version)
+# Keep identity visibility consistent even when another prompt config was loaded first.
+typeset -g POWERLEVEL9K_ALWAYS_SHOW_CONTEXT=true
+typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_{CONTENT,VISUAL_IDENTIFIER}_EXPANSION=''
+typeset -g POWERLEVEL9K_CONTEXT_{ROOT,REMOTE,REMOTE_SUDO}_CONTENT_EXPANSION='%n@%m'
 typeset -g POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
 typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_CHAR=' '
