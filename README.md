@@ -70,14 +70,14 @@ The optional `--alias` flag enables the supplied PHP/Laravel, Git, Python, act, 
 
 Each app has its own installer and documentation:
 
-- [Rectangle](rectangle/README.md) — `brew install --cask rectangle`.
+- [Rectangle](rectangle/README.md) — `brew install --cask rectangle`, plus the supplied shortcut and preference export, imported when Rectangle next starts.
 - [Bruno](bruno/README.md) — `brew install --cask bruno`.
 - [T3 Code](t3codes/README.md) — the official `t3` CLI installer and `brew install --cask t3-code` for the desktop app.
 - [Codex CLI](codex/README.md) — the official standalone installer.
 - [Claude Code](claude/README.md) — the official native installer.
 - [JetBrains DataGrip](datagrip/README.md) — `brew install --cask datagrip`.
 - [CaskHub](caskhub/README.md) — `brew install --cask caskhub`.
-- [Vorssaint](vorssaint/README.md) — `brew install --cask vorssaint`.
+- [Vorssaint](vorssaint/README.md) — `brew install --cask vorssaint`, plus the supplied preferences, applied while Vorssaint is closed with an existing-settings backup.
 - [Obsidian](obsidian/README.md) — `brew install --cask obsidian`.
 - [Brave Browser](brave/README.md) — `brew install --cask brave-browser`.
 - [Spotify](spotify/README.md) — `brew install --cask spotify`.
@@ -99,4 +99,4 @@ Keep the full checkout: the new app installers share `scripts/install-common.sh`
 ./verify.sh
 ```
 
-Runs shell syntax checks, terminal tests, Lerd installer tests, shared app-installer tests, and root-installer orchestration tests. Package-manager, download, and orchestration tests use isolated stand-ins; they do not install applications or run the real upstream installers.
+Runs shell syntax checks, terminal tests, Lerd installer tests, shared app-installer tests, settings-import tests, and root-installer orchestration tests. Package-manager, download, preference-import, and orchestration tests use isolated stand-ins; they do not install applications, change your app settings, or run the real upstream installers.
