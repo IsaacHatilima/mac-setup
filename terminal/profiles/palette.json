@@ -1,0 +1,80 @@
+{
+  "Midnight": {
+    "bg": "111B1A",
+    "fg": "DBE8E2",
+    "muted": "829F94",
+    "accent": "A0DFC3",
+    "amber": "F1C986",
+    "selection": "294B40",
+    "ansi": [
+      "22322D",
+      "F08C83",
+      "A0DFC3",
+      "F1C986",
+      "92BDD2",
+      "B6ADDE",
+      "8DCCC5",
+      "CADBD2",
+      "829F94",
+      "FFA69D",
+      "B2ECCC",
+      "FFDA9D",
+      "AED4E7",
+      "D0C5EE",
+      "ABE4DC",
+      "EFF6F0"
+    ]
+  },
+  "Paper": {
+    "bg": "F6F3EC",
+    "fg": "293C35",
+    "muted": "647066",
+    "accent": "27634C",
+    "amber": "8C571F",
+    "selection": "DAE4D7",
+    "ansi": [
+      "293C35",
+      "AB433D",
+      "27634C",
+      "8C571F",
+      "315D7D",
+      "725777",
+      "26706B",
+      "64756A",
+      "647066",
+      "B84F43",
+      "317550",
+      "936019",
+      "386A8C",
+      "82648C",
+      "347F76",
+      "F6F3EC"
+    ]
+  },
+  "Bordeaux": {
+    "bg": "0F0406",
+    "fg": "E2DDE3",
+    "muted": "95929C",
+    "accent": "D8B4C2",
+    "amber": "D6B5A2",
+    "selection": "651926",
+    "ansi": [
+      "462831",
+      "E68B9B",
+      "A9BAA5",
+      "D6B5A2",
+      "9BAAC3",
+      "C5A4CB",
+      "A9BBC3",
+      "C9C0CA",
+      "95929C",
+      "F7A0AF",
+      "C1D2BB",
+      "E6CBB9",
+      "BBC5D9",
+      "D8B4C2",
+      "C3D4D9",
+      "E2DDE3"
+    ]
+  }
+}
