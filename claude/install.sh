@@ -3,4 +3,4 @@ set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT/scripts/install-common.sh"
 macsetup_init "$@"
-macsetup_install_cli 'Claude Code' claude https://claude.ai/install.sh /bin/bash "$HOME/.local/bin/claude"
+macsetup_install_cli 'Claude Code' claude https://claude.ai/install.sh /bin/bash "$HOME/.local/bin/claude" update claude-code @anthropic-ai/claude-code

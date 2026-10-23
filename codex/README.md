@@ -15,7 +15,7 @@ From the MacSetup project folder:
 
 Run as your normal user, without `sudo`. Homebrew is not required for this module. The wrapper downloads the complete upstream installer to a temporary file before executing it with `sh` and removes the temporary file afterward.
 
-An existing `codex` command is kept without an automatic upgrade or a change of installation method. A native installation outside your PATH is also recognized at `~/.local/bin/codex`, or under `CODEX_INSTALL_DIR` when set. To update an existing installation, follow the instructions for the installation method you originally used.
+An existing native `codex` command is updated with `codex update`. Recognized Homebrew or npm installations are upgraded through their owning package manager. A native installation outside your PATH is also recognized at `~/.local/bin/codex`, or under `CODEX_INSTALL_DIR` when set. Rerun this module to install missing software or check an existing installation for updates.
 
 Open a new terminal and run `codex` to finish sign-in. The wrapper does not start Codex or change model, authentication, or agent settings.
 

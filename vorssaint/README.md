@@ -9,7 +9,7 @@ Homebrew must already be installed. From the MacSetup project folder:
 ./vorssaint/install.sh          # Install
 ```
 
-Run as your normal user, without `sudo`. An existing Homebrew installation is kept without an automatic upgrade. Open the app from Applications to finish setup.
+Run as your normal user, without `sudo`. An existing Homebrew installation is upgraded with `--greedy`, including apps that update themselves. If no Homebrew receipt exists, setup installs the cask with `--force` so a manually installed app bundle can be replaced with the current release. Preferences are not removed. Open the app from Applications to finish setup.
 
 To update later:
 

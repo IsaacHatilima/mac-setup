@@ -186,6 +186,70 @@ class InstallationTests(unittest.TestCase):
         self.assertIn("--dry-run", forwarded.read_text().splitlines())
         self.assertEqual(list(self.target.iterdir()), [])
 
+    def run_dependency_setup(self, installed, *args, fail=False):
+        commands = self.root / "commands"
+        commands.mkdir(exist_ok=True)
+        operations = self.root / "dependency-operations"
+        configured = self.root / "configuration-arguments"
+        brew = commands / "brew"
+        brew.write_text('''#!/bin/bash
+set -eu
+case "$1" in
+  --prefix) printf '%s\\n' "$MACSETUP_TEST_PREFIX" ;;
+  list) [[ "$MACSETUP_TEST_INSTALLED" == 1 ]] ;;
+  install|upgrade)
+    [[ ${MACSETUP_TEST_FAIL_UPGRADE:-0} == 0 ]] || exit 23
+    printf '%s\\n' "$*" >> "$MACSETUP_TEST_OPERATIONS" ;;
+  *) exit 9 ;;
+esac
+''')
+        brew.chmod(0o755)
+        python = self.prefix / "bin/python3"
+        python.write_text('#!/bin/bash\nprintf "%s\\n" "$@" > "$MACSETUP_TEST_CONFIGURED"\n')
+        python.chmod(0o755)
+        result = subprocess.run(["/bin/bash", str(PACKAGE / "setup.sh"), *args],
+                                capture_output=True, text=True, timeout=10,
+                                env={**os.environ, "HOME": str(self.target), "PATH": f"{commands}:/usr/bin:/bin",
+                                     "MACSETUP_TEST_PREFIX": str(self.prefix), "MACSETUP_TEST_INSTALLED": str(int(installed)),
+                                     "MACSETUP_TEST_OPERATIONS": str(operations), "MACSETUP_TEST_CONFIGURED": str(configured),
+                                     "MACSETUP_TEST_FAIL_UPGRADE": str(int(fail))})
+        return result, operations, configured
+
+    def test_setup_upgrades_installed_terminal_dependencies(self):
+        result, operations, configured = self.run_dependency_setup(True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(operations.read_text().splitlines(), [
+            "upgrade --formula python", "upgrade --formula fzf", "upgrade --formula zoxide", "upgrade --formula bat",
+            "upgrade --formula powerlevel10k", "upgrade --formula zsh-autosuggestions", "upgrade --formula zsh-syntax-highlighting",
+            "upgrade --cask --greedy iterm2", "upgrade --cask --greedy font-meslo-for-powerlevel10k"])
+        self.assertTrue(configured.exists())
+
+    def test_setup_installs_missing_terminal_dependencies(self):
+        result, operations, configured = self.run_dependency_setup(False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("install --formula fzf\n", operations.read_text())
+        self.assertIn("install --cask --force iterm2\n", operations.read_text())
+        self.assertIn("install --cask --force font-meslo-for-powerlevel10k\n", operations.read_text())
+        self.assertTrue(configured.exists())
+
+    def test_dependency_update_preview_makes_no_package_changes(self):
+        result, operations, configured = self.run_dependency_setup(True, "--check")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(operations.exists())
+        self.assertIn("upgrade --formula fzf", result.stdout)
+        self.assertIn("--dry-run", configured.read_text())
+
+    def test_skip_deps_does_not_install_or_upgrade(self):
+        result, operations, configured = self.run_dependency_setup(True, "--skip-deps")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(operations.exists())
+        self.assertTrue(configured.exists())
+
+    def test_dependency_upgrade_failure_stops_before_configuration(self):
+        result, _, configured = self.run_dependency_setup(True, fail=True)
+        self.assertEqual(result.returncode, 23)
+        self.assertFalse(configured.exists())
+
     def test_fresh_install_repeat_and_full_restore(self):
         self.install()
         self.assertEqual(self.rc.read_text().count(configure.START), 1)

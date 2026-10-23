@@ -1,19 +1,19 @@
 # Lerd
 
-Install [Lerd](https://lerd.sh/) on macOS through Homebrew for local PHP and JavaScript development with `.test` domains and HTTPS.
+Install or update [Lerd](https://lerd.sh/) on macOS for local PHP and JavaScript development with `.test` domains and HTTPS.
 
 ## Install
 
-Homebrew must already be installed. From the MacSetup project folder:
+Homebrew is required for a fresh installation. Existing standalone installations can update without it. From the MacSetup project folder:
 
 ```sh
 ./leard/install.sh --check  # Preview the steps
 ./leard/install.sh          # Install and configure Lerd
 ```
 
-Run as your normal user, without `sudo`. The script finds Homebrew in your PATH or its standard Apple Silicon/Intel location. It installs `lerd-env/lerd/lerd` if missing, then runs the Homebrew-managed `lerd install`. Existing Homebrew installations are reused without an automatic upgrade. An installation from another source on your PATH must be resolved before switching to Homebrew.
+Run as your normal user, without `sudo`. The script finds Homebrew in your PATH or its standard Apple Silicon/Intel location. An existing standalone `lerd` on your PATH, or at `~/.local/bin/lerd`, is updated in place with `lerd update`; it is not switched to Homebrew. Lerd's own updater reapplies environment setup when it updates the binary. Existing Homebrew installations use `brew upgrade --formula lerd-env/lerd/lerd`. Missing Lerd uses `brew install --formula lerd-env/lerd/lerd`. Both Homebrew paths then run `lerd install` to apply configuration. If multiple copies exist, the active standalone executable is updated rather than rejected.
 
-Homebrew installs Podman as a dependency. Lerd sets up Podman Machine, certificates, `.test` DNS, nginx, and its app launcher. Follow any prompts from Lerd to finish system setup. Stop any existing local stack using the same HTTP/HTTPS or DNS ports before configuring Lerd.
+When Homebrew is available, the wrapper also installs or upgrades Podman. Homebrew installs Podman as a dependency on a fresh Lerd installation. Lerd sets up Podman Machine, certificates, `.test` DNS, nginx, and its app launcher. Follow any prompts from Lerd to finish system setup. Stop any existing local stack using the same HTTP/HTTPS or DNS ports before configuring Lerd.
 
 If Homebrew reports an untrusted tap, run this once and retry:
 
@@ -40,15 +40,18 @@ lerd dashboard
 ## Update and remove
 
 ```sh
-brew upgrade lerd
-lerd install              # Explicitly reapply setup after an update
+./leard/install.sh         # Detect the installation method and update it
+# Or manually:
+lerd update                # Standalone installation
+brew upgrade lerd          # Homebrew installation
+lerd install               # Reapply setup after a Homebrew update
 ```
 
 To remove Lerd, review its data-removal prompts before continuing:
 
 ```sh
 lerd uninstall
-brew uninstall lerd
+brew uninstall lerd       # Only for a Homebrew installation
 ```
 
 Lerd's uninstaller leaves the Podman machine in place. Manage it separately if other projects or tools use it.

@@ -7,19 +7,21 @@ Reusable setup tools for macOS development environments. Each component lives in
 From the MacSetup project folder:
 
 ```sh
-./install.sh                # Install every component
-./install.sh --alias        # Install everything and enable the developer aliases
+./install.sh                # Install missing components and update existing ones
+./install.sh --alias        # Install/update everything and enable the developer aliases
 ./install.sh --check        # Preview all steps without running installers
 ./install.sh --alias --check
 ```
 
-Run as your normal user, without `sudo`. The script first ensures Homebrew and a working Homebrew Python 3.9+ are available. Missing Python is installed with `brew install python`; an installed but unusable version is repaired with `brew reinstall python`. A working version is reused, and its directory is added to `PATH` for every component installer. On a fresh Mac, Homebrew is installed before Python.
+Run as your normal user, without `sudo`. The script first ensures Homebrew and a working Homebrew Python 3.9+ are available. Missing Python is installed with `brew install python`; a working installation is checked for upgrades with `brew upgrade python`, and an installed but unusable version is repaired with `brew reinstall python`. Its directory is added to `PATH` for every component installer. On a fresh Mac, Homebrew is installed before Python.
 
 Terminal setup then installs its remaining dependencies and creates `~/Developer`, followed by Lerd and every application listed below. T3 Code includes both its CLI and desktop app.
 
 `--alias` is passed only to terminal setup. The aliases are disabled on a fresh default install and retained on later runs once enabled. The root `--check` prints the installation plan without invoking any component, downloading packages, or changing configuration. Use an individual component's `--check` for its detailed checks.
 
-Installation stops if Python setup fails, before any component installer runs, or at the first failing component. Resolve that error and rerun the same command; component installers preserve existing installations. Open each application or CLI afterward to finish its own setup and sign-in.
+Each component checks for an existing installation: missing software is installed and existing software is updated. Homebrew casks use `brew upgrade --cask --greedy` so apps with their own updater are checked too. When an app was installed manually and has no Homebrew receipt, the cask installer replaces its app bundle with the current release using `--force`; it does not run an uninstall or remove preferences.
+
+Installation stops if Python setup fails, before any component installer runs, or at the first genuine installation/update error. Resolve that error and rerun the same command. Open each application or CLI afterward to finish its own setup and sign-in.
 
 ## Terminal
 
@@ -47,7 +49,7 @@ The optional `--alias` flag enables the supplied PHP/Laravel, Git, Python, act, 
 
 ## Lerd
 
-[Lerd setup](leard/README.md) installs Lerd through Homebrew and configures its local development environment, including Podman, `.test` DNS, and HTTPS. Homebrew must already be installed.
+[Lerd setup](leard/README.md) updates an existing standalone Lerd with `lerd update`, upgrades a Homebrew installation, or installs Lerd through Homebrew when missing. Homebrew installations then run `lerd install` to apply the local environment configuration, including Podman, `.test` DNS, and HTTPS. A fresh installation requires Homebrew.
 
 ```sh
 ./leard/install.sh --check  # Preview the installation
@@ -87,7 +89,7 @@ Run a selected app's installer from the project folder, for example:
 ./rectangle/install.sh          # Install
 ```
 
-The Homebrew installers require Homebrew and keep existing packages without upgrading them. The CLI wrappers keep existing commands and fully download upstream scripts before executing them. All support `--check`. Run installers as your normal user, without `sudo`, then open each app or CLI to finish its own setup.
+The Homebrew installers require Homebrew and install or upgrade their configured packages. Existing Codex and Claude CLIs use their update commands; recognized Homebrew/npm installations update through the owning package manager. T3 Code reruns its official CLI installer or updates its npm installation, and updates the desktop cask independently. Missing CLIs use fully downloaded upstream scripts. All support `--check`, which never installs or updates software. Run installers as your normal user, without `sudo`, then open each app or CLI to finish its own setup.
 
 Keep the full checkout: the new app installers share `scripts/install-common.sh`.
 
