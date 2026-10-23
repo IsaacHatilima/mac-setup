@@ -24,6 +24,7 @@ class AppInstallerTests(unittest.TestCase):
         self.native = self.root / "native bin/macsetup-test-tool"
         self.prefix = self.root / "brew prefix"
         (self.prefix / "bin").mkdir(parents=True)
+        (self.prefix / "bin/python3").symlink_to(sys.executable)
         self.operations = self.root / "package-operations"
         self.executable(self.bin / "brew", '''#!/bin/bash
 set -eu
@@ -59,7 +60,27 @@ Path(os.environ["MACSETUP_TEST_DOWNLOAD_PATH"]).write_text(str(target))
 target.write_text(os.environ["MACSETUP_TEST_PAYLOAD"])
 raise SystemExit(int(os.environ.get("MACSETUP_TEST_CURL_FAIL", "0")))
 ''')
-        self.env = {**os.environ, "PATH": f"{self.bin}:/usr/bin:/bin",
+        # Settings installers must never reach the real user's preferences service.
+        self.executable(self.bin / "pgrep", "#!/bin/sh\nexit 1\n")
+        self.executable(self.bin / "defaults", f'''#!{sys.executable}
+import os
+from pathlib import Path
+import plistlib
+import sys
+args = sys.argv[1:]
+assert args[1] == "com.vorssaint.utils", args
+preferences = Path(os.environ["HOME"]) / "Library/Preferences/com.vorssaint.utils.plist"
+if args == ["export", "com.vorssaint.utils", "-"]:
+    sys.stdout.buffer.write(preferences.read_bytes() if preferences.exists() else plistlib.dumps({{}}))
+elif args[0] == "import":
+    preferences.parent.mkdir(parents=True, exist_ok=True)
+    preferences.write_bytes(Path(args[2]).read_bytes())
+else:
+    raise SystemExit(9)
+''')
+        self.home = self.root / "User with spaces"
+        self.home.mkdir()
+        self.env = {**os.environ, "HOME": str(self.home), "PATH": f"{self.bin}:/usr/bin:/bin",
                     "MACSETUP_TEST_RECEIPTS": str(self.receipts),
                     "MACSETUP_TEST_CONFIGURED": str(self.configured),
                     "MACSETUP_TEST_DOWNLOAD_PATH": str(self.download_path),
