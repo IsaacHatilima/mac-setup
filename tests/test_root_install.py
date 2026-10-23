@@ -45,8 +45,10 @@ set -eu
 set -eu
 case "$*" in
   --prefix) printf '%s\\n' "$MACSETUP_TEST_PREFIX" ;;
+  'list --formula lerd-env/lerd/lerd') exit 1 ;;
+  'list --formula podman'|'upgrade --formula podman') exit 0 ;;
   'list --formula python') [[ -f "$MACSETUP_TEST_PYTHON_RECEIPT" ]] ;;
-  'install python'|'reinstall python')
+  'install python'|'reinstall python'|'upgrade python')
     [[ ${MACSETUP_TEST_PYTHON_INSTALL_FAIL:-0} == 0 ]] || exit 23
     if [[ "$1" == install && -f "$MACSETUP_TEST_PYTHON_RECEIPT" ]]; then exit 0; fi
     if [[ ${MACSETUP_TEST_INSTALL_BROKEN_PYTHON:-0} == 1 ]]; then
@@ -126,6 +128,20 @@ printf '%s\\n' "$0" "$#" "$@" >> "$MACSETUP_TEST_CALLS"
         self.assertEqual([name for name, _ in self.calls()], COMPONENTS[:5])
         self.assertIn("bruno/install.sh", result.stderr)
 
+    def test_existing_standalone_lerd_is_updated_and_later_apps_still_run(self):
+        shutil.copy2(ROOT / "leard/install.sh", self.root / "leard/install.sh")
+        (self.root / "scripts").mkdir()
+        shutil.copy2(ROOT / "scripts/install-common.sh", self.root / "scripts/install-common.sh")
+        updated = self.root / "lerd-updated"
+        native = self.commands / "lerd"
+        native.write_text('#!/bin/bash\n[[ "$*" == update ]] || exit 7\n: > "$MACSETUP_TEST_LERD_UPDATED"\n')
+        native.chmod(0o755)
+        self.env["MACSETUP_TEST_LERD_UPDATED"] = str(updated)
+        result = self.run_installer()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(updated.exists())
+        self.assertEqual([name for name, _ in self.calls()], [name for name in COMPONENTS if name != "leard/install.sh"])
+
     def test_missing_python_is_installed_before_any_component(self):
         self.python.unlink()
         self.python_receipt.unlink()
@@ -135,12 +151,17 @@ printf '%s\\n' "$0" "$#" "$@" >> "$MACSETUP_TEST_CALLS"
         self.assertTrue(self.python_ready.exists())
         self.assertEqual([name for name, _ in self.calls()], COMPONENTS)
 
-    def test_working_python_is_reused_without_reinstalling(self):
-        self.env["MACSETUP_TEST_PYTHON_INSTALL_FAIL"] = "1"
+    def test_working_python_is_upgraded_before_components(self):
         result = self.run_installer()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.python_receipt.read_text(), "Existing Python package.\n")
+        self.assertEqual(self.python_receipt.read_text(), "Installed Python.\n")
         self.assertTrue(self.python_ready.exists())
+
+    def test_python_upgrade_failure_stops_all_components(self):
+        self.env["MACSETUP_TEST_PYTHON_INSTALL_FAIL"] = "1"
+        result = self.run_installer()
+        self.assertEqual(result.returncode, 23)
+        self.assertFalse(self.log.exists())
 
     def test_broken_installed_python_is_repaired(self):
         self.python.write_text("#!/bin/bash\nexit 1\n")

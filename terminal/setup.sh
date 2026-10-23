@@ -55,38 +55,16 @@ if [[ -z "$brew_bin" ]]; then
 fi
 prefix="$("$brew_bin" --prefix)"
 export PATH="$prefix/bin:$prefix/sbin:$PATH"
-# Install missing formulae only; do not upgrade unrelated existing packages.
-formulae=(python fzf zoxide bat powerlevel10k zsh-autosuggestions zsh-syntax-highlighting)
-missing_formulae=()
-for formula in "${formulae[@]}"; do
-  if ! "$brew_bin" list --formula "$formula" >/dev/null 2>&1; then
-    if (( check )); then echo "Would install: $formula"
-    elif (( ! skip_deps )); then missing_formulae+=("$formula")
-    fi
-  fi
-done
-if (( ${#missing_formulae[@]} )); then
-  HOMEBREW_NO_INSTALL_CLEANUP=1 "$brew_bin" install "${missing_formulae[@]}"
-fi
-iterm_app=''
-for candidate in /Applications/iTerm.app "$HOME/Applications/iTerm.app"; do
-  if [[ -d "$candidate" ]]; then iterm_app="$candidate"; break; fi
-done
-if [[ -z "$iterm_app" ]]; then
-  if (( check )); then echo 'Would install: iTerm2'
-  elif (( ! skip_deps )); then
-    "$brew_bin" install --cask iterm2
-    iterm_app=/Applications/iTerm.app
-  fi
-fi
-fonts_complete=1
-for variant in Regular Bold Italic 'Bold Italic'; do
-  [[ -f "$HOME/Library/Fonts/MesloLGS NF $variant.ttf" || -f "/Library/Fonts/MesloLGS NF $variant.ttf" ]] || fonts_complete=0
-done
-if (( ! fonts_complete )); then
-  if (( check )); then echo 'Would install: MesloLGS NF fonts'
-  elif (( ! skip_deps )); then "$brew_bin" install --cask font-meslo-for-powerlevel10k
-  fi
+# Install missing dependencies and check existing ones for updates.
+source "$ROOT/../scripts/install-common.sh"
+MACSETUP_BREW_BIN="$brew_bin"
+MACSETUP_CHECK=$check
+if (( ! skip_deps )); then
+  for formula in python fzf zoxide bat powerlevel10k zsh-autosuggestions zsh-syntax-highlighting; do
+    macsetup_install_formula "$formula" "$formula"
+  done
+  macsetup_install_cask iterm2 iTerm2
+  macsetup_install_cask font-meslo-for-powerlevel10k 'MesloLGS NF fonts'
 fi
 python_bin="$prefix/bin/python3"
 if [[ ! -x "$python_bin" ]]; then

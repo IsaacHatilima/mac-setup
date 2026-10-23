@@ -12,7 +12,7 @@ Open a terminal and run:
 
 Run this from the MacSetup project folder, or double-click **terminal/Install.command** in Finder. The package can live anywhere. To use another Mac, copy the project and run the same command there. From inside `terminal/`, use `./setup.sh` directly; the commands below assume that directory.
 
-The installer creates `~/Developer` in the current user's home folder and installs missing Homebrew dependencies, iTerm2, and the MesloLGS NF fonts. For example, a home folder of `/Users/alex` gets `/Users/alex/Developer`; no username is hardcoded. Existing projects in that folder are preserved. Homebrew's first installation may request your Mac password and Apple's Command Line Tools. Follow those prompts; if macOS requires the tools installation to finish separately, rerun the same script afterward. Run as your normal user, **without `sudo`**.
+The installer creates `~/Developer` in the current user's home folder and installs or updates its Homebrew dependencies, iTerm2, and the MesloLGS NF fonts. For example, a home folder of `/Users/alex` gets `/Users/alex/Developer`; no username is hardcoded. Existing projects in that folder are preserved. Homebrew's first installation may request your Mac password and Apple's Command Line Tools. Follow those prompts; if macOS requires the tools installation to finish separately, rerun the same script afterward. Run as your normal user, **without `sudo`**.
 
 When setup finishes, open iTerm and choose **Profiles → MacSetup Bordeaux**. Type `desk` for the shortcut guide. Open a new tab to load new settings; existing tabs can run `source ~/.zshrc`.
 
@@ -25,6 +25,8 @@ If iTerm is closed during installation, setup makes Bordeaux the default. If iTe
 ./setup.sh --replace-edits  # Back up and replace edited package-owned files
 ./setup.sh --alias          # Include the optional developer aliases in .zshrc
 ```
+
+Keep the full MacSetup checkout: terminal setup uses `scripts/install-common.sh` from the project root. Unless `--skip-deps` is used, each run checks the terminal dependencies for upgrades, including iTerm2 and the fonts. Manually installed app bundles can be replaced by their Homebrew casks without removing preferences.
 
 Repeat installations reuse the same profile identifiers and update the same shell block. Edits outside that block are preserved. If you have edited a managed profile or helper, setup stops instead of silently overwriting it; `--replace-edits` explicitly backs up and replaces those edits.
 

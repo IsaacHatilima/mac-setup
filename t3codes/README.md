@@ -18,7 +18,7 @@ brew install --cask t3-code
 
 The script installs the `t3` CLI; the cask installs the desktop app. The wrapper downloads the full upstream script to a temporary file before executing it with `sh`, then installs the cask. It requires Homebrew before either step starts.
 
-Existing CLI and Homebrew desktop installations are kept independently. Finding an existing `t3` command does not skip desktop installation. The native CLI location defaults to `~/.local/bin/t3` and follows `T3CODE_INSTALL_BIN_DIR` when set. Open a new terminal if the installer asks you to update your PATH.
+The CLI and desktop app are checked independently. Existing npm CLIs are updated through npm; native CLIs rerun the official installer, which selects the current release. An existing Homebrew desktop cask is upgraded with `--greedy`; a missing cask is installed with `--force` to allow replacing an existing manual app bundle. Finding an existing `t3` command does not skip desktop installation. The native CLI location defaults to `~/.local/bin/t3` and follows `T3CODE_INSTALL_BIN_DIR` when set. Open a new terminal if the installer asks you to update your PATH.
 
 Open T3 Code from Applications or run `t3` to get started. No agent sign-in or background service setup is performed by this wrapper.
 
@@ -28,7 +28,7 @@ Update the desktop app through Homebrew:
 brew upgrade --cask t3-code
 ```
 
-For CLI updates, use the upstream installation method. The MacSetup wrapper keeps an existing CLI without upgrading it.
+Rerun `./t3codes/install.sh` to check both the CLI and desktop app for updates.
 
 Keep the full MacSetup checkout: the installer uses `scripts/install-common.sh`.
 

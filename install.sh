@@ -14,7 +14,7 @@ Usage: ./install.sh [--alias] [--check]
   --alias  Enable the optional developer aliases during terminal setup.
   --check  Show all steps without running any component installer.
 
-Ensures Homebrew and Python 3.9+ are available first, then installs
+Ensures Homebrew and Python 3.9+ are available first, then installs or updates
 terminal setup, Lerd, and all application modules.
 Run on macOS as your normal user, without sudo.
 HELP
@@ -97,13 +97,10 @@ prepare_python() {
   prefix="$("$brew_bin" --prefix)"
   export PATH="$prefix/bin:$prefix/sbin:$PATH"
   python_bin="$prefix/bin/python3"
-  if python_works "$python_bin"; then
-    printf '==> Python 3.9+ is available: %s\n' "$python_bin"
-    return 0
-  fi
-
   action=install
-  if "$brew_bin" list --formula python >/dev/null 2>&1; then action=reinstall; fi
+  if "$brew_bin" list --formula python >/dev/null 2>&1; then
+    if python_works "$python_bin"; then action=upgrade; else action=reinstall; fi
+  fi
   printf '==> Preparing Python: brew %s python\n' "$action"
   if HOMEBREW_NO_INSTALL_CLEANUP=1 "$brew_bin" "$action" python; then
     :
@@ -131,7 +128,7 @@ run_component() {
 }
 
 if (( check )); then
-  echo 'Would ensure Homebrew is available, then install or repair Homebrew Python 3.9+ if needed.'
+  echo 'Would ensure Homebrew is available, then install, upgrade, or repair Homebrew Python 3.9+.'
   echo 'Would add Homebrew Python to PATH for every component installer.'
 else
   prepare_python
