@@ -41,7 +41,7 @@ Enable the supplied Laravel/PHP, Git, Python, act, and Expo shortcuts when insta
 ./terminal/setup.sh --alias          # Install with aliases
 ```
 
-A fresh install without `--alias` leaves this alias set disabled. Once enabled, later setup runs retain it even when you omit the flag. All 35 definitions are in [shell/aliases.zsh](shell/aliases.zsh), including the quoted Expo device names exactly as supplied.
+A fresh install without `--alias` leaves this alias set disabled. Once enabled, later setup runs retain it even when you omit the flag. All 36 definitions are in [shell/aliases.zsh](shell/aliases.zsh), including `developer` to change directory to `~/Developer` and the quoted Expo device names exactly as supplied.
 
 Setup copies the definitions to `~/.config/macsetup-terminal/aliases.zsh` and adds its loader to the managed `.zshrc` block. These aliases load in any zsh terminal, including Apple Terminal and other iTerm profiles. Open a new shell or run `source ~/.zshrc` to load them after installation. Existing `.zshrc` content outside the managed block is preserved; the optional aliases are defined when that block runs.
 

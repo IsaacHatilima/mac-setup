@@ -1,5 +1,6 @@
 # Optional developer shortcuts, installed by terminal/setup.sh --alias.
 alias cls="clear"
+alias developer='cd "$HOME/Developer"'
 alias model="php artisan make:model"
 alias migration-m="php artisan make:model -m"
 alias migration="php artisan make:migration"

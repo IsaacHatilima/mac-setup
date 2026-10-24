@@ -45,7 +45,7 @@ Validate the terminal package:
 
 See the [terminal documentation](terminal/README.md) for dependencies, shortcuts, custom project locations, backups, and uninstall instructions.
 
-The optional `--alias` flag enables the supplied PHP/Laravel, Git, Python, act, and Expo aliases through `.zshrc`. They are disabled on a fresh default install and retained on later runs once enabled.
+The optional `--alias` flag enables the supplied PHP/Laravel, Git, Python, act, and Expo aliases through `.zshrc`, plus `developer` to change directory to `~/Developer`. They are disabled on a fresh default install and retained on later runs once enabled.
 
 ## Lerd
 
