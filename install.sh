@@ -15,7 +15,7 @@ Usage: ./install.sh [--alias] [--check]
   --check  Show all steps without running any component installer.
 
 Ensures Homebrew and Python 3.9+ are available first, then installs or updates
-terminal setup, Lerd, and all application modules.
+terminal setup and all application modules.
 Run on macOS as your normal user, without sudo.
 HELP
       exit 0 ;;
@@ -28,7 +28,6 @@ done
 
 installers=(
   terminal/setup.sh
-  leard/install.sh
   raycast/install.sh
   rectangle/install.sh
   bruno/install.sh

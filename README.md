@@ -15,7 +15,7 @@ From the MacSetup project folder:
 
 Run as your normal user, without `sudo`. The script first ensures Homebrew and a working Homebrew Python 3.9+ are available. Missing Python is installed with `brew install python`; a working installation is checked for upgrades with `brew upgrade python`, and an installed but unusable version is repaired with `brew reinstall python`. Its directory is added to `PATH` for every component installer. On a fresh Mac, Homebrew is installed before Python.
 
-Terminal setup then installs its remaining dependencies and creates `~/Developer`, followed by Lerd and every application listed below. T3 Code includes both its CLI and desktop app.
+Terminal setup then installs its remaining dependencies and creates `~/Developer`, followed by every application listed below. T3 Code includes both its CLI and desktop app.
 
 `--alias` is passed only to terminal setup. The aliases are disabled on a fresh default install and retained on later runs once enabled. The root `--check` prints the installation plan without invoking any component, downloading packages, or changing configuration. Use an individual component's `--check` for its detailed checks.
 
@@ -49,7 +49,7 @@ The optional `--alias` flag enables the supplied PHP/Laravel, Git, Python, act, 
 
 ## Lerd
 
-[Lerd setup](leard/README.md) updates an existing standalone Lerd with `lerd update`, upgrades a Homebrew installation, or installs Lerd through Homebrew when missing. Homebrew installations then run `lerd install` to apply the local environment configuration, including Podman, `.test` DNS, and HTTPS. A fresh installation requires Homebrew.
+Lerd is not part of `./install.sh`; run its installer on its own when you need it. [Lerd setup](leard/README.md) updates an existing standalone Lerd with `lerd update`, upgrades a Homebrew installation, or installs Lerd through Homebrew when missing. Homebrew installations then run `lerd install` to apply the local environment configuration, including Podman, `.test` DNS, and HTTPS. A fresh installation requires Homebrew.
 
 ```sh
 ./leard/install.sh --check  # Preview the installation

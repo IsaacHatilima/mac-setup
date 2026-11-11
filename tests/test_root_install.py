@@ -8,11 +8,13 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = [
-    "terminal/setup.sh", "leard/install.sh", "raycast/install.sh", "rectangle/install.sh",
+    "terminal/setup.sh", "raycast/install.sh", "rectangle/install.sh",
     "bruno/install.sh", "codex/install.sh", "claude/install.sh", "t3codes/install.sh",
     "datagrip/install.sh", "caskhub/install.sh", "vorssaint/install.sh", "obsidian/install.sh",
     "brave/install.sh", "spotify/install.sh",
 ]
+# Kept in the checkout for running on its own, but not part of the full install.
+STANDALONE = ["leard/install.sh"]
 
 
 class RootInstallerTests(unittest.TestCase):
@@ -45,8 +47,6 @@ set -eu
 set -eu
 case "$*" in
   --prefix) printf '%s\\n' "$MACSETUP_TEST_PREFIX" ;;
-  'list --formula lerd-env/lerd/lerd') exit 1 ;;
-  'list --formula podman'|'upgrade --formula podman') exit 0 ;;
   'list --formula python') [[ -f "$MACSETUP_TEST_PYTHON_RECEIPT" ]] ;;
   'install python'|'reinstall python'|'upgrade python')
     [[ ${MACSETUP_TEST_PYTHON_INSTALL_FAIL:-0} == 0 ]] || exit 23
@@ -63,7 +63,7 @@ case "$*" in
 esac
 ''')
         brew.chmod(0o755)
-        for name in COMPONENTS:
+        for name in COMPONENTS + STANDALONE:
             path = self.root / name
             path.parent.mkdir()
             path.write_text('''#!/bin/bash
@@ -125,22 +125,29 @@ printf '%s\\n' "$0" "$#" "$@" >> "$MACSETUP_TEST_CALLS"
         self.env["MACSETUP_TEST_FAIL_COMPONENT"] = "bruno/install.sh"
         result = self.run_installer()
         self.assertEqual(result.returncode, 29)
-        self.assertEqual([name for name, _ in self.calls()], COMPONENTS[:5])
+        self.assertEqual([name for name, _ in self.calls()],
+                         COMPONENTS[:COMPONENTS.index("bruno/install.sh") + 1])
         self.assertIn("bruno/install.sh", result.stderr)
 
-    def test_existing_standalone_lerd_is_updated_and_later_apps_still_run(self):
-        shutil.copy2(ROOT / "leard/install.sh", self.root / "leard/install.sh")
-        (self.root / "scripts").mkdir()
-        shutil.copy2(ROOT / "scripts/install-common.sh", self.root / "scripts/install-common.sh")
-        updated = self.root / "lerd-updated"
-        native = self.commands / "lerd"
-        native.write_text('#!/bin/bash\n[[ "$*" == update ]] || exit 7\n: > "$MACSETUP_TEST_LERD_UPDATED"\n')
-        native.chmod(0o755)
-        self.env["MACSETUP_TEST_LERD_UPDATED"] = str(updated)
+    def test_lerd_is_not_installed_or_previewed(self):
+        for args in ((), ("--check",)):
+            with self.subTest(args=args):
+                result = self.run_installer(*args)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("leard/install.sh", [name for name, _ in self.calls()])
+                self.assertNotIn("leard", result.stdout)
+                self.assertNotIn("Lerd", result.stdout)
+
+    def test_missing_lerd_installer_does_not_stop_installation(self):
+        (self.root / "leard/install.sh").unlink()
         result = self.run_installer()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue(updated.exists())
-        self.assertEqual([name for name, _ in self.calls()], [name for name in COMPONENTS if name != "leard/install.sh"])
+        self.assertEqual([name for name, _ in self.calls()], COMPONENTS)
+
+    def test_help_does_not_mention_lerd(self):
+        result = self.run_installer("--help")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("Lerd", result.stdout)
 
     def test_missing_python_is_installed_before_any_component(self):
         self.python.unlink()
