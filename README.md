@@ -93,10 +93,19 @@ The Homebrew installers require Homebrew and install or upgrade their configured
 
 Keep the full checkout: the new app installers share `scripts/install-common.sh`.
 
+## Mac Cleaner
+
+[Mac Cleaner](mac-cleaner/README.md) finds Xcode caches, project build artifacts (`node_modules`, `.next`, `Pods`, Composer `vendor`, …), package-manager caches, and app caches, and reports their size. It deletes nothing unless you pass `--clean`, and it asks once per category.
+
+```sh
+./mac-cleaner/mac-clean.sh          # Preview what can be freed
+./mac-cleaner/mac-clean.sh --clean  # Delete, asking per category
+```
+
 ## Verification
 
 ```sh
 ./verify.sh
 ```
 
-Runs shell syntax checks, terminal tests, Lerd installer tests, shared app-installer tests, settings-import tests, and root-installer orchestration tests. Package-manager, download, preference-import, and orchestration tests use isolated stand-ins; they do not install applications, change your app settings, or run the real upstream installers.
+Runs shell syntax checks, terminal tests, Lerd installer tests, shared app-installer tests, settings-import tests, root-installer orchestration tests, and Mac Cleaner tests. Package-manager, download, preference-import, and orchestration tests use isolated stand-ins; they do not install applications, change your app settings, or run the real upstream installers.
